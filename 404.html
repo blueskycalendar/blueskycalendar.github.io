@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Sky — Calendrier parachutisme</title>
+<meta name="description" content="Calendriers 2026 des centres de parachutisme français.">
+<meta property="og:title" content="Blue Sky — Calendrier parachutisme">
+<meta property="og:description" content="Calendriers 2026 des centres de parachutisme français.">
+<meta property="og:type" content="website">
+<meta name="apple-itunes-app" content="app-id=6769322783">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0B0E14; --surface: #141820; --border: #252C3D;
+  --text: #ffffff; --muted: #A0A8BB; --dim: #5A637A;
+  --accent: #60A5FA; --primary: #3B82F6;
+}
+html, body { background: var(--bg); color: var(--text); min-height: 100vh; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  padding: 24px 20px 48px;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 520px; margin: 0 auto; }
+.brand { text-align: center; margin-bottom: 28px; }
+.brand h1 { color: var(--primary); font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+.brand p { color: var(--muted); font-size: 11px; margin-top: 4px; }
+.centre-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+}
+.centre-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
+.centre-name { font-size: 22px; font-weight: 700; }
+.cta {
+  display: block; background: var(--primary); color: white;
+  text-align: center; padding: 14px 18px; border-radius: 12px;
+  font-weight: 600; font-size: 15px; text-decoration: none;
+  margin-bottom: 8px; transition: opacity 0.15s;
+}
+.cta:hover { opacity: 0.9; }
+.cta-hint {
+  text-align: center; color: var(--dim); font-size: 12px;
+  margin-bottom: 24px;
+}
+.info-grid { display: grid; gap: 10px; margin-bottom: 24px; }
+.info-row {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+}
+.info-label {
+  color: var(--accent); font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; margin-bottom: 4px; text-transform: uppercase;
+}
+.info-value { font-size: 14px; color: var(--text); word-wrap: break-word; }
+.info-value a { color: var(--accent); text-decoration: none; }
+.footer {
+  text-align: center; color: var(--dim);
+  font-size: 11px; margin-top: 28px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="brand">
+    <h1>Blue Sky</h1>
+    <p>tous les évènements, un seul ciel.</p>
+  </div>
+  <div id="content"></div>
+</div>
+<script>
+const APP_STORE = "https://apps.apple.com/fr/app/blue-sky-calendrier-para/id6769322783";
+const CENTRES = {
+  "bouloc":           {"name":"Bouloc EP","color":"#E07B39","region":"Occitanie","official":"EP MIDI-PYRENEES","address":"Aérodrome Cardenal, 82110 Bouloc","phone":"05 63 95 39 46","website":"http://www.bouloc-skydive.com"},
+  "lannion":          {"name":"Lannion Septième Ciel","color":"#4ADE80","region":"Bretagne","official":"SEPTIEME CIEL","address":"126 Rue de l'Aérodrome - ZA Pégase Sud, 22300 Lannion","phone":"07 61 36 15 16","website":"http://www.septiemeciel-parachutisme.fr"},
+  "lyon":             {"name":"Lyon Corbas EP","color":"#F472B6","region":"Auvergne-RA","official":"EP DE LYON-CORBAS","address":"Rue Clément Ader - Aérodrome de Corbas, 69960 Corbas","phone":"07 67 56 31 73","website":"http://parachutisme-lyon.fr"},
+  "epcol":            {"name":"Orléans EPCOL","color":"#8B5CF6","region":"Centre-Val","official":"EP DU CENTRE ORLEANS LOIRET (EPCOL)","address":"Aéroport du Loiret, 45550 Saint-Denis-de-l'Hôtel","phone":"02 38 46 00 82","website":"http://www.parachutisme-orleans.net"},
+  "pamiers":          {"name":"Pamiers CEPS","color":"#CA8A04","region":"Occitanie","official":"CEPS DE L'ARIEGE","address":"Aérodrome de Pamiers-les-Pujols, 09101 Pamiers","phone":"05 61 68 72 00","website":"http://www.parachutisme-pamiers09.fr"},
+  "para71":           {"name":"Châlon Para71","color":"#EF4444","region":"Bourgogne","official":"EURL ANGEL PARACHUTISME","address":"Aérodrome de Chalon-Champforgeuil, 71530 Champforgeuil","phone":"03 85 43 40 87","website":"http://www.parachutisme71.com"},
+  "parisjump":        {"name":"Saint-Flo Paris Jump","color":"#0891B2","region":"Bourgogne","official":"PARIS JUMP","address":"Aérodrome de Saint-Florentin-Cheu, 89600 Cheu","phone":"06 58 63 77 99","website":"http://www.parisjump.com"},
+  "cerp-alsace":      {"name":"Strasbourg CERP","color":"#10B981","region":"Grand Est","official":"CERP ALSACE","address":"82 Rue de la Musau - Aérodrome du Polygone, 67100 Strasbourg","phone":"03 88 84 48 48","website":"http://www.alsace-para.com"},
+  "cerps":            {"name":"Tallard CERPS","color":"#F59E0B","region":"PACA","official":"CERPS DE TALLARD","address":"630 Rue Pierre Georges Latécoère, 05130 Tallard","phone":"04 92 54 02 39","website":"http://parachutismegap.fr"},
+  "skc":              {"name":"Tallard SKC","color":"#FBBF24","region":"PACA","official":"SKYDIVE CENTER","address":"160 Rue Pierre Georges Latécoère, 05130 Tallard","phone":"04 92 54 16 38","website":"http://www.skydivecenter.fr"},
+  "besancon":         {"name":"Besançon EP","color":"#818CF8","region":"Bourgogne","official":"EP BESANCON FRANCHE-COMTE","address":"Route de l'Aérodrome, 25660 La Vèze","phone":"03 81 81 35 58","website":"http://www.parabesancon.fr"},
+  "pujaut":           {"name":"Pujaut EFP","color":"#F97316","region":"PACA","official":"SKYDIVE PUJAUT EFP","address":"Route du Camp de l'Aviation - Aérodrome de Pujaut, 30131 Pujaut","phone":"04 90 26 41 83","website":"http://www.skydive-pujaut.com"},
+  "bondue":           {"name":"Lille Bondues EFP","color":"#6EE7B7","region":"Hauts-de-Fr.","official":"EFP LILLE BONDUES","address":"98 Parc de l'Aérodrome - Aérodrome de Lille-Marcq, 59910 Bondues","phone":"03 20 98 20 16","website":"http://www.parachutisme-lille.fr"},
+  "cahors":           {"name":"Cahors CEP","color":"#FDA4AF","region":"Occitanie","official":"CEP DE CAHORS","address":"Aérodrome de Cahors-Lalbenque, 46230 Cieurac","phone":"05 65 21 00 54","website":"https://www.cahors-skydive.fr/"},
+  "vannes":           {"name":"Vannes EP","color":"#67E8F9","region":"Bretagne","official":"EP SPORTIF DE VANNES BRETAGNE","address":"1-2 Rue Kersimon, 56250 Monterblanc","phone":"02 97 60 78 69","website":"http://www.parachutisme-vannes.fr"},
+  "fretoy":           {"name":"Frétoy EICEPS","color":"#D8B4FE","region":"Hauts-de-Fr.","official":"ESPACE INTERCLUBS EUROPEEN DE PARACHUTISME SPORTIF","address":"Route du Bois de Ham - Aérodrome, 60640 Frétoy-le-Château","phone":"03 44 43 68 39","website":"http://www.skydivefretoy.com"},
+  "rochefort-bigair": {"name":"Rochefort Big'Air","color":"#FCA5A5","region":"Nouvelle-Aq.","official":"SARL BIG'AIR PARACHUTISME","address":"Aérodrome de Rochefort, 17620 Saint-Agnant","phone":"07 87 21 49 04","website":"https://bigair-parachutisme.fr"},
+  "saumur":           {"name":"Saumur EFP","color":"#86EFAC","region":"Pays de Loire","official":"EFP DE SAUMUR","address":"118 Rue des Landes de Terrefort - Aérodrome, 49400 Saumur","phone":"02 41 50 45 27","website":"http://www.saumur-parachutisme.com"},
+  "tarade":           {"name":"Tallard Alpes Aviation","color":"#FDE68A","region":"PACA","official":"ALPES AVIATION (TARADE)","address":"290 Place Pierre Georges Latécoère, 05130 Tallard","phone":"06 72 88 00 51","website":"https://alpes-aviation-parachutisme.com/"},
+  "mimizan":          {"name":"Mimizan Skydive","color":"#F0ABFC","region":"Nouvelle-Aq.","official":"SKYDIVE MIMIZAN","address":"708 Allée Andrée Dupeyron - Aérodrome de Mimizan, 40200 Mimizan","phone":"05 58 09 27 62","website":"https://skydive-mimizan.fr/"},
+  "pcb":              {"name":"La Réunion CEP","color":"#5EEAD4","region":"La Réunion","official":"P.C. DE BOURBON / CEP DE LA REUNION","address":"Route de l'Aéroport, 97410 Saint-Paul (Réunion)","phone":"02 62 25 54 41","website":"https://www.parabourbon.fr"},
+  "efpnl":            {"name":"Nancy Azelot EFP","color":"#C4B5FD","region":"Grand Est","official":"EFP NANCY LORRAINE","address":"Aérodrome de Nancy-Azelot, 54210 Azelot","phone":"03 83 46 50 69","website":"http://www.paranancy.com"},
+  "lens":             {"name":"Lens CERP","color":"#A3E635","region":"Hauts-de-Fr.","official":"CERP LENS","address":"Route de la Bassée - Aérodrome de Lens-Bénifontaine, 62410 Bénifontaine","phone":"06 50 39 15 50","website":"http://www.lens-parachutisme.com"},
+  "cerpm":            {"name":"Maubeuge CERP","color":"#FB7185","region":"Hauts-de-Fr.","official":"C.E.R.P. DE MAUBEUGE","address":"Aérodrome de la Salmagne, 59600 Vieux-Reng","phone":"03 27 67 98 31","website":"http://www.skydivemaubeuge.fr"},
+  "grenoble":         {"name":"Grenoble CEP","color":"#2DD4BF","region":"Auvergne-RA","official":"CEP DE GRENOBLE","address":"239 Route de St-Hilaire - Aéroport Grenoble-Alpes-Isère, 38590 Saint-Etienne-de-Saint-Geoirs","phone":"06 47 74 13 68","website":"https://www.parachutismegrenoble.fr/"},
+  "occitanie":        {"name":"Lézignan Skydive","color":"#D946EF","region":"Occitanie","official":"SARL SKYDIVE OCCITANIE","address":"Aérodrome Plaine Conilhac, 11200 Lézignan-Corbières","phone":"06 82 50 43 40","website":"http://www.skydive-flyzone.com"},
+  "pau":              {"name":"Pau Parachutisme","color":"#F97316","region":"Nouvelle-Aq.","official":"PAU PARACHUTISME PASSION","address":"Aérodrome de Lasclaveries, 64450 Lasclaveries","phone":"05 59 04 85 89","website":"http://www.pau-skydive.fr"},
+  "brienne":          {"name":"Brienne Aube","color":"#7DD3FC","region":"Grand Est","official":"SAS AUBE PARACHUTISME","address":"Aérodrome de Brienne-le-Château, 10500 Précy-Saint-Martin","phone":"06 81 48 51 78","website":"https://aubeparachutisme.fr/"},
+  "peronne":          {"name":"Peronne CP","color":"#BEF264","region":"Hauts-de-Fr.","official":"SARL CP PARIS PERONNE HAUTE SOMME","address":"23 Avenue de l'Europe, 80201 Péronne","phone":"06 70 71 28 94","website":"http://www.parachute-peronne.fr"},
+  "chambery":         {"name":"Chambéry Aix-les-Bains","color":"#A5F3FC","region":"Auvergne-RA","official":"SARL SAVOIE PARACHUTISME","address":"Aéroport de Chambéry-Aix-les-Bains, 73420 Viviers-du-Lac","phone":"06 13 09 61 56","website":"http://www.savoieparachutisme.com"}
+};
+
+function render() {
+  const m = window.location.pathname.match(/\/centre\/([^/?#]+)/);
+  const id = m ? decodeURIComponent(m[1]) : null;
+  const c = id ? CENTRES[id] : null;
+  const el = document.getElementById('content');
+
+  if (!c) {
+    el.innerHTML = `
+      <p class="cta-hint" style="margin-top:24px">Découvre les calendriers 2026 de tous les centres de parachutisme français.</p>
+      <a class="cta" href="${APP_STORE}">Télécharger sur l'App Store</a>
+    `;
+    return;
+  }
+
+  document.title = c.name + " — Blue Sky";
+  document.querySelector('meta[property="og:title"]').setAttribute('content', c.name + " — Blue Sky");
+  document.querySelector('meta[property="og:description"]').setAttribute('content', "Calendrier 2026 du centre " + c.name);
+
+  let h = `
+    <div class="centre-header">
+      <div class="centre-dot" style="background:${c.color}"></div>
+      <h2 class="centre-name">${esc(c.name)}</h2>
+    </div>
+    <a class="cta" href="${APP_STORE}">Ouvrir / Télécharger Blue Sky</a>
+    <p class="cta-hint">Le calendrier complet est dans l'app.</p>
+    <div class="info-grid">
+  `;
+  if (c.official) h += row("Nom officiel", esc(c.official));
+  if (c.address)  h += row("Adresse", esc(c.address));
+  if (c.region)   h += row("Région", esc(c.region));
+  if (c.phone)    h += row("Téléphone", `<a href="tel:${c.phone.replace(/\s/g,'')}">${esc(c.phone)}</a>`);
+  if (c.website)  h += row("Site internet", `<a href="${c.website}" target="_blank" rel="noopener">${esc(c.website)}</a>`);
+  h += '</div><p class="footer">Blue Sky · Calendrier parachutisme 2026</p>';
+  el.innerHTML = h;
+}
+
+function row(label, val) {
+  return `<div class="info-row"><div class="info-label">${label}</div><div class="info-value">${val}</div></div>`;
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+render();
+</script>
+</body>
+</html>
