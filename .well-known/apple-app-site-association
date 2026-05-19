@@ -1,0 +1,12 @@
+{
+     "applinks": {
+       "details": [
+         {
+           "appIDs": ["7SX74H2NRB.com.c137.blueskyparachutisme"],
+           "components": [
+             { "/": "/centre/*", "comment": "Pages centre" }
+           ]
+         }
+       ]
+     }
+   }
